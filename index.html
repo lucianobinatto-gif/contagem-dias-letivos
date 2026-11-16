@@ -1,0 +1,293 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Contagem Regressiva de Dias Letivos | Painel do Professor</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@500;600;700&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Anton&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+  <canvas id="confetti-canvas" aria-hidden="true"></canvas>
+
+  <div class="bg-decor">
+    <span class="floating-icon icon-1">📚</span>
+    <span class="floating-icon icon-2">☕</span>
+    <span class="floating-icon icon-3">✏️</span>
+    <span class="floating-icon icon-4">🎓</span>
+    <span class="floating-icon icon-5">🏖️</span>
+  </div>
+
+  <header class="site-header">
+    <div class="container header-inner">
+      <div class="brand">
+        <div class="brand-badge">☕ + 📚</div>
+        <div>
+          <span class="eyebrow">Sobrevivência Docente • Ano Letivo</span>
+          <h1>Férias à Vista!</h1>
+        </div>
+      </div>
+
+      <div class="header-actions">
+        <button id="btn-celebrate" class="btn btn-accent" title="Soltar confete para comemorar!">
+          🎉 Soltar Confete
+        </button>
+        <button id="btn-share-whatsapp" class="btn btn-whatsapp" title="Compartilhar contagem no grupo dos professores">
+          📲 Mandar no Grupo
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <main class="container main-grid">
+    <!-- Coluna Esquerda: Contagem Regressiva & Estatísticas -->
+    <section class="countdown-section card">
+      <div class="card-header-row">
+        <div class="status-pill" id="urgency-badge">
+          <span class="pulse-dot"></span>
+          <span id="urgency-text">Reta Final do Ano Letivo!</span>
+        </div>
+        <div class="today-display" id="today-display">Hoje: --/--/----</div>
+      </div>
+
+      <!-- Número Principal de Dias Letivos -->
+      <div class="hero-counter">
+        <span class="hero-label">FALTAM EXATAMENTE</span>
+        <div class="hero-number-wrap">
+          <span id="school-days-count" class="hero-number">0</span>
+          <div class="hero-unit-stack">
+            <span class="hero-unit" id="school-days-unit">DIAS LETIVOS</span>
+            <span class="hero-sub" id="target-date-label">até 18 de dezembro de 2026</span>
+          </div>
+        </div>
+        <p class="hero-encouragement" id="hero-encouragement">
+          Respira fundo, hidrate a garganta e prepare o diário de classe: a praia já está quase chamando seu nome!
+        </p>
+      </div>
+
+      <!-- Relógio em Tempo Real -->
+      <div class="live-clock-bar" aria-label="Relógio em tempo real até o fim do último dia letivo">
+        <div class="clock-item">
+          <span class="clock-val" id="calendar-days">00</span>
+          <span class="clock-lbl">Dias Corridos</span>
+        </div>
+        <span class="clock-sep">:</span>
+        <div class="clock-item">
+          <span class="clock-val" id="clock-hours">00</span>
+          <span class="clock-lbl">Horas</span>
+        </div>
+        <span class="clock-sep">:</span>
+        <div class="clock-item">
+          <span class="clock-val" id="clock-minutes">00</span>
+          <span class="clock-lbl">Minutos</span>
+        </div>
+        <span class="clock-sep">:</span>
+        <div class="clock-item">
+          <span class="clock-val" id="clock-seconds">00</span>
+          <span class="clock-lbl">Segundos</span>
+        </div>
+      </div>
+
+      <!-- Barra de Progresso do Ano Letivo -->
+      <div class="progress-box">
+        <div class="progress-header">
+          <span>Progresso de Sobrevivência do Ano Letivo</span>
+          <strong id="progress-percent">0% concluído</strong>
+        </div>
+        <div class="progress-track">
+          <div class="progress-fill" id="progress-fill" style="width: 0%"></div>
+        </div>
+        <div class="progress-footer">
+          <span id="progress-detail-left">Início: 02/02</span>
+          <span>Meta: Férias! 🏖️</span>
+        </div>
+      </div>
+
+      <!-- Métricas Divertidas de Professor -->
+      <div class="teacher-metrics">
+        <div class="metric-card">
+          <span class="metric-icon">📅</span>
+          <div>
+            <strong id="mondays-left">0</strong>
+            <span>Segundas-feiras restantes</span>
+          </div>
+        </div>
+        <div class="metric-card">
+          <span class="metric-icon">☕</span>
+          <div>
+            <strong id="coffees-left">0</strong>
+            <span>Xícaras de café estimadas</span>
+          </div>
+        </div>
+        <div class="metric-card">
+          <span class="metric-icon">🔔</span>
+          <div>
+            <strong id="weeks-left">0</strong>
+            <span>Semanas letivas</span>
+          </div>
+        </div>
+        <div class="metric-card">
+          <span class="metric-icon">🎉</span>
+          <div>
+            <strong id="holidays-between">0</strong>
+            <span>Feriados/recessos no caminho</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Configuração do Calendário Escolar -->
+      <details class="config-panel" id="config-panel">
+        <summary class="config-summary">
+          <span>⚙️ Configurar Calendário Escolar, Feriados e Sábados Letivos</span>
+          <span class="summary-hint">Personalizar datas</span>
+        </summary>
+        <div class="config-body">
+          <div class="form-row">
+            <div class="form-group">
+              <label for="input-start-date">Início do Período Letivo</label>
+              <input type="date" id="input-start-date" />
+            </div>
+            <div class="form-group">
+              <label for="input-end-date">Último Dia Letivo</label>
+              <input type="date" id="input-end-date" />
+            </div>
+          </div>
+
+          <div class="checkbox-row">
+            <label class="toggle-label">
+              <input type="checkbox" id="input-include-today" checked />
+              <span>Incluir o dia de hoje na contagem (se for dia letivo)</span>
+            </label>
+            <label class="toggle-label">
+              <input type="checkbox" id="input-count-saturdays" />
+              <span>Contar todos os sábados como letivos</span>
+            </label>
+          </div>
+
+          <div class="holidays-manager">
+            <div class="holidays-header">
+              <h4>Feriados e Recessos (descontados dos dias letivos)</h4>
+              <button type="button" id="btn-reset-holidays" class="btn-link">Restaurar feriados padrão</button>
+            </div>
+            <div class="add-holiday-row">
+              <input type="date" id="new-holiday-date" />
+              <input type="text" id="new-holiday-name" placeholder="Ex: Conselho de Classe / Emenda de feriado" />
+              <button type="button" id="btn-add-holiday" class="btn btn-small">+ Adicionar Folga</button>
+            </div>
+            <ul id="holiday-list" class="holiday-chips"></ul>
+          </div>
+        </div>
+      </details>
+    </section>
+
+    <!-- Coluna Direita: Meme Inspirador do Professor -->
+    <section class="meme-section card">
+      <div class="meme-top-bar">
+        <div>
+          <span class="meme-tag">🎭 Dose Diária de Motivação Docente</span>
+          <h2>Meme Inspirador do Dia</h2>
+        </div>
+        <div class="meme-counter-pill" id="meme-index-pill">1 / 10</div>
+      </div>
+
+      <!-- Filtro de Humor -->
+      <div class="mood-tabs" role="tablist" aria-label="Filtrar categoria de memes">
+        <button class="mood-tab active" data-category="all">✨ Todos</button>
+        <button class="mood-tab" data-category="reta-final">🏖️ Reta Final</button>
+        <button class="mood-tab" data-category="cafe">☕ Café & Coragem</button>
+        <button class="mood-tab" data-category="inspirador">❤️ Orgulho de Ensinar</button>
+      </div>
+
+      <!-- Palco do Meme -->
+      <div class="meme-stage" id="meme-stage">
+        <div class="meme-art-container" id="meme-art-container">
+          <!-- Ilustração SVG ou Imagem Customizada entra aqui -->
+          <div id="meme-svg-holder" class="meme-svg-holder"></div>
+          <img id="meme-custom-img" class="meme-custom-img hidden" alt="Meme personalizado" />
+
+          <!-- Textos Clássicos de Meme -->
+          <div class="meme-overlay-text meme-top-text" id="meme-top-text">QUANDO FALTAM POUCOS DIAS LETIVOS</div>
+          <div class="meme-overlay-text meme-bottom-text" id="meme-bottom-text">MAS AINDA TEM 140 PROVAS PRA CORRIGIR</div>
+
+          <!-- Selo com a contagem no canto do meme -->
+          <div class="meme-corner-badge" id="meme-corner-badge">
+            Faltam <strong>23</strong> dias letivos!
+          </div>
+        </div>
+
+        <!-- Frase Inspiradora para Professores -->
+        <blockquote class="inspiring-quote-box">
+          <p id="meme-quote">"Ensinar é plantar sementes que florescem mesmo depois que o sinal toca."</p>
+          <footer id="meme-caption">— Força, professor(a)! Você está quase lá.</footer>
+        </blockquote>
+      </div>
+
+      <!-- Controles do Meme -->
+      <div class="meme-controls">
+        <button id="btn-prev-meme" class="btn btn-secondary" title="Meme anterior">⬅️ Anterior</button>
+        <button id="btn-random-meme" class="btn btn-primary">🎲 Outro Meme Inspirador</button>
+        <button id="btn-next-meme" class="btn btn-secondary" title="Próximo meme">Próximo ➡️</button>
+      </div>
+
+      <div class="meme-extra-actions">
+        <button id="btn-download-meme" class="btn btn-outline">
+          📸 Baixar Card (Meme + Contagem)
+        </button>
+        <button id="btn-toggle-editor" class="btn btn-outline">
+          ✏️ Criar / Editar Meu Meme
+        </button>
+      </div>
+
+      <!-- Editor de Meme Personalizado -->
+      <div id="meme-editor" class="meme-editor hidden">
+        <h4>Personalize o Meme para sua Escola</h4>
+        <div class="form-group">
+          <label for="custom-top-input">Texto do Topo</label>
+          <input type="text" id="custom-top-input" maxlength="80" placeholder="Ex: EU CHEGANDO NA SALA DOS PROFESSORES" />
+        </div>
+        <div class="form-group">
+          <label for="custom-bottom-input">Texto da Base</label>
+          <input type="text" id="custom-bottom-input" maxlength="80" placeholder="Ex: SABENDO QUE SÓ FALTAM 23 DIAS LETIVOS!" />
+        </div>
+        <div class="form-group">
+          <label for="custom-quote-input">Mensagem Inspiradora</label>
+          <input type="text" id="custom-quote-input" maxlength="160" placeholder="Sua frase motivacional para os colegas..." />
+        </div>
+        <div class="form-group">
+          <label for="custom-img-input">Ou envie uma foto/meme da sua galeria (opcional)</label>
+          <input type="file" id="custom-img-input" accept="image/*" />
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <!-- Barra Inferior de Próximos Dias Letivos (Mini Calendário Visual) -->
+  <section class="container calendar-preview-section">
+    <div class="card calendar-card">
+      <div class="calendar-card-header">
+        <div>
+          <h3>🗺️ Mapa da Reta Final</h3>
+          <p>Clique em qualquer dia útil abaixo para marcá-lo ou desmarcá-lo como <strong>Recesso / Folga Escolar</strong>:</p>
+        </div>
+        <div class="calendar-legend">
+          <span class="legend-item"><i class="dot dot-school"></i> Dia Letivo</span>
+          <span class="legend-item"><i class="dot dot-holiday"></i> Feriado / Recesso</span>
+          <span class="legend-item"><i class="dot dot-weekend"></i> Fim de Semana</span>
+        </div>
+      </div>
+      <div id="mini-calendar-grid" class="mini-calendar-grid"></div>
+    </div>
+  </section>
+
+  <footer class="site-footer container">
+    <p>Feito com ❤️, giz colorido e muito café para todos os professores e professoras! • Clique nos dias do mapa acima para personalizar seu calendário.</p>
+  </footer>
+
+  <!-- Toast de Notificação -->
+  <div id="toast" class="toast hidden" role="status" aria-live="polite"></div>
+
+  <script src="app.js"></script>
+</body>
+</html>
